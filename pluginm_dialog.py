@@ -43,6 +43,14 @@ class pluginmDialog(QtWidgets.QDialog, FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
         self.pushButton_dh.clicked.connect(self.calculate_dh)
+        self.pushButton_zliczobiek.clicked.connect(self.zlicz_obiekty)
+        
+    
+    def zlicz_obiekty(self):
+        wybrana_warstwa =  self.mMapLayerComboBox.currentLayer()
+        liczba_obiektów = wybrana_warstwa.featureCount()
+        self.labelWynik.setText(str(liczba_obiektów))
+        
         
     def calculate_dh(self):
         current_layer = self.mMapLayerComboBox.currentLayer()
@@ -52,10 +60,7 @@ class pluginmDialog(QtWidgets.QDialog, FORM_CLASS):
         d_h = h_2 - h_1
         self.label_dh_result.setText(f'{d_h} m')
         
-    def zlicz_obiekty(self):
-        wybrana_warstwa =  self.mMapLayerComboBox.currentLayer()
-        liczba_obiektów = wybrana_warstwa.featureCount()
-        self.labelWynik.setText(str(liczba_obiektów))
+    
         
         
     def oblicz_powierzchnie(wspolrzedne):
