@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Sun Jun  9 20:53:38 2024
+
+@author: Paweł
+"""
+
+# -*- coding: utf-8 -*-
+"""
 /***************************************************************************
  pluginmDialog
                                  A QGIS plugin
@@ -26,6 +33,8 @@ import os
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
+from qgis.utils import iface
+from qgis.core import QgsWkbTypes
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -42,15 +51,49 @@ class pluginmDialog(QtWidgets.QDialog, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
-        self.pushButton_dh.clicked.connect(self.calculate_dh)
         self.pushButton_zliczobiek.clicked.connect(self.zlicz_obiekty)
-        
-    
+        self.pushButton_pokazwsp.clicked.connect(self.podaj_dane_o_obiekcie)
+        self.pushButton_dh.clicked.connect(self.calculate_dh)
+
     def zlicz_obiekty(self):
         wybrana_warstwa =  self.mMapLayerComboBox.currentLayer()
         liczba_obiektów = wybrana_warstwa.featureCount()
         self.labelWynik.setText(str(liczba_obiektów))
-        
+    
+    def podaj_dane_o_obiekcie(self):
+        aktywna_warstwa = iface.activeLayer()
+        selected_f = aktywna_warstwa.selectedFeatures()
+        self.label_resultnazwa.setText(aktywna_warstwa.name())
+        for feature in selected_f:
+            geom = feature.geometry()
+            geomSingleType = QgsWkbTypes.isSingleType(geom.wkbType())
+            if geom.type() == QgsWkbTypes.PointGeometry:
+                if geomSingleType:
+                    x = geom.asPoint()
+                    
+                    self.listaWybranychOb_wsp.append(f'Point: {x}, \r\n')
+                else:
+                    x = geom.asMultiPoint()
+                    
+                    self.listaWybranychOb_wsp.append(f'MultiPoint: {x}, \r\n')
+            elif geom.type() == QgsWkbTypes.LineGeometry:
+                if geomSingleType:
+                    x =geom.asPolyline()
+                    self.listaWybranychOb_wsp.append(f'Line: {x}, \r\n')
+                else:
+                    x = geom.asMultiPolyline()
+                    self.listaWybranychOb_wsp.append(f'Multiline: {x}, \r\n')
+            elif geom.type() == QgsWkbTypes.PolygonGeometry:
+                if geomSingleType:
+                    x = geom.asPolygon()
+                    self.listaWybranychOb_wsp.append(f'Polygon: {x}, \r\n')
+                else:
+                    x = geom.asMultiPolygon()
+                    self.listaWybranychOb_wsp.append(f'MultiPolygon: {x}, \r\n')
+            else:
+                print('unknown or invalid geomety')
+                    
+                    
         
     def calculate_dh(self):
         current_layer = self.mMapLayerComboBox.currentLayer()
@@ -63,16 +106,16 @@ class pluginmDialog(QtWidgets.QDialog, FORM_CLASS):
     
         
         
-    def oblicz_powierzchnie(wspolrzedne):
+    #def oblicz_powierzchnie(wspolrzedne):
    
-    n = len(wspolrzedne)
-    if n < 3:
-        raise ValueError("Wielokąt musi mieć przynajmniej 3 wierzchołki")
+    #n = len(wspolrzedne)
+    ##if n < 3:
+        #raise ValueError("Wielokąt musi mieć przynajmniej 3 wierzchołki")
     
-    suma = 0.0
-    for i in range(n):
-        x1, y1 = wspolrzedne[i]
-        x2, y2 = wspolrzedne[(i + 1) % n]  # Zapewnia, że ostatni wierzchołek łączy się z pierwszym
-        suma += x1 * y2 - y1 * x2
+    #suma = 0.0
+    #for i in range(n):
+        #x1, y1 = wspolrzedne[i]
+        #x2, y2 = wspolrzedne[(i + 1) % n]  # Zapewnia, że ostatni wierzchołek łączy się z pierwszym
+        #suma += x1 * y2 - y1 * x2
 
-    return abs(suma) / 2.0
+    #return abs(suma) / 2.0
