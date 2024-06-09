@@ -121,42 +121,38 @@ class pluginmDialog(QtWidgets.QDialog, FORM_CLASS):
             
         QgsMessageLog.logMessage('Różnica wysokości między wybranymi punktami wynosi:' +str(d_h) +'m', level = Qgis.Success)
         
-        iface.messageBar().pushMessage("Różnica wysokosci", 'Różnica wysokości między wybranymi punktami została policzona', level = Qgis.Success)
+        iface.messageBar().pushMessage("Różnica wysokosci",'Różnica wysokości między wybranymi punktami wynosi:' +str(d_h) +'m', level = Qgis.Success)
         
     
     def licz_pole(self):
-        current_layer = self.mMapLayerComboBox.currentLayer()
-        if current_layer is None:
-            iface.messageBar().pushMessage("Pole powierzchni", 'Nie wybrano aktywnej warstwy', level = Qgis.Warning)
-            return
-        selected_features = current_layer.selectedFeatures()
+        obiekty = self.mMapLayerComboBox.currentLayer().selectedFeatures()
         punkty = []
-        for feature in selected_features:
-            geom = feature.geometry()
-            if geom.type() == QgsWkbTypes.PointGeometry:
-                point = geom.asPoint()
-                x, y = round(point.x(), 3), round(point.y(), 3)
-                p = QgsPointXY(x, y)
-                punkty.append(p)
-
+        for o in obiekty:
+            x = float(o.geometry().asPoint().x())
+            y = float(o.geometry().asPoint().y())
+            p = QgsPointXY(x, y)
+            punkty.append(p)
+            
         if len(punkty) < 3:
-            iface.messageBar().pushMessage("Pole powierzchni", 'Aby policzyć pole powierzchni wybierz co najmniej TRZY PUNKTY', level = Qgis.Warning)
+            iface.messageBar().pushMessage("Pole powierzchni", 'Aby policzyć pole powierzchni wybierz co najmniej TRZY PUNKTY', level=Qgis.Warning)
             return
+            
+        if len(punkty) > 2:
+            pole = 0
+            dl = len(punkty)
+            for e in range(dl):
+                a = (e + 1) % dl
+                pole += (punkty[a].x() + punkty[e].x()) * (punkty[a].y() - punkty[e].y())
 
-        pole = 0
-        dl = len(punkty)
-        for e in range(dl):
-            a = (e + 1) % dl
-            pole += (punkty[a].x() + punkty[e].x()) * (punkty[a].y() - punkty[e].y())
-
-        pole /= 2
-        pole = round(abs(pole / 10000), 3)
-        
-        self.label_pole.setText(str(pole) + ' ha')
+            pole /= 2
+            pole = round(abs(pole / 10000), 3)
+            
+         
+            self.label_pole.setText(str(pole) + ' ha')
 
         QgsMessageLog.logMessage('Pole powierzchni wielokąta wynosi: ' + str(pole) + ' ha', level = Qgis.Success)
         
-        iface.messageBar().pushMessage("Pole powierzchni", 'Pole powierzchni wielokąta zostało policzone', level = Qgis.Success)
+        iface.messageBar().pushMessage("Pole powierzchni", 'Pole powierzchni wielokąta wynosi: ' + str(pole) + ' ha', level = Qgis.Success)
        
         
     #def oblicz_powierzchnie(wspolrzedne):
