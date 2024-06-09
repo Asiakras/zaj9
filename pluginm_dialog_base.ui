@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>550</x>
-     <y>551</y>
+     <y>611</y>
      <width>161</width>
-     <height>71</height>
+     <height>51</height>
     </rect>
    </property>
    <property name="orientation">
@@ -32,10 +32,10 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>60</y>
+     <x>80</x>
+     <y>20</y>
      <width>161</width>
-     <height>81</height>
+     <height>51</height>
     </rect>
    </property>
    <property name="font">
@@ -50,8 +50,8 @@
   <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox">
    <property name="geometry">
     <rect>
-     <x>459</x>
-     <y>86</y>
+     <x>480</x>
+     <y>30</y>
      <width>201</width>
      <height>41</height>
     </rect>
@@ -104,8 +104,8 @@
   <widget class="QPushButton" name="pushButton_zliczobiek">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>180</y>
+     <x>320</x>
+     <y>110</y>
      <width>93</width>
      <height>28</height>
     </rect>
@@ -117,8 +117,8 @@
   <widget class="QLabel" name="label_lobiektow">
    <property name="geometry">
     <rect>
-     <x>84</x>
-     <y>180</y>
+     <x>80</x>
+     <y>100</y>
      <width>111</width>
      <height>51</height>
     </rect>
@@ -127,12 +127,113 @@
     <string>liczba obiektów</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_wynikobiektow">
+  <widget class="QLabel" name="labelWynik">
    <property name="geometry">
     <rect>
-     <x>544</x>
-     <y>180</y>
+     <x>550</x>
+     <y>110</y>
      <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_wsppkt">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>400</y>
+     <width>151</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>współrzędne punktów</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_pokazwsp">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>400</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>pokaż</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_nazwawarstwy">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>190</y>
+     <width>131</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>nazwa akt. warstwy</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_resultnazwa">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>190</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="listaWybranychOb_wsp">
+   <property name="geometry">
+    <rect>
+     <x>443</x>
+     <y>370</y>
+     <width>351</width>
+     <height>121</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_liczpole">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>520</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>oblicz</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_poledesc">
+   <property name="geometry">
+    <rect>
+     <x>94</x>
+     <y>520</y>
+     <width>71</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>pole</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_pole">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>520</y>
+     <width>161</width>
      <height>41</height>
     </rect>
    </property>
