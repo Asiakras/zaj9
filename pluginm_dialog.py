@@ -145,26 +145,14 @@ class pluginmDialog(QtWidgets.QDialog, FORM_CLASS):
                 pole += (punkty[a].x() + punkty[e].x()) * (punkty[a].y() - punkty[e].y())
 
             pole /= 2
-            pole = round(abs(pole / 10000), 3)
+            pole = round(abs(pole), 3)
             
          
-            self.label_pole.setText(str(pole) + ' ha')
+            self.label_pole.setText(str(pole) + ' m2')
 
-        QgsMessageLog.logMessage('Pole powierzchni wielokąta wynosi: ' + str(pole) + ' ha', level = Qgis.Success)
+        QgsMessageLog.logMessage('Pole powierzchni wielokąta wynosi: ' + str(pole) + ' m2', level = Qgis.Success)
         
-        iface.messageBar().pushMessage("Pole powierzchni", 'Pole powierzchni wielokąta wynosi: ' + str(pole) + ' ha', level = Qgis.Success)
+        iface.messageBar().pushMessage("Pole powierzchni", 'Pole powierzchni wielokąta wynosi: ' + str(pole) + ' m2', level = Qgis.Success)
        
         
-    #def oblicz_powierzchnie(wspolrzedne):
-   
-    #n = len(wspolrzedne)
-    ##if n < 3:
-        #raise ValueError("Wielokąt musi mieć przynajmniej 3 wierzchołki")
     
-    #suma = 0.0
-    #for i in range(n):
-        #x1, y1 = wspolrzedne[i]
-        #x2, y2 = wspolrzedne[(i + 1) % n]  # Zapewnia, że ostatni wierzchołek łączy się z pierwszym
-        #suma += x1 * y2 - y1 * x2
-
-    #return abs(suma) / 2.0
