@@ -35,6 +35,10 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.utils import iface
 from qgis.core import QgsWkbTypes
+from qgis.core import QgsMessageLog, Qgis
+import numpy as np
+from qgis.core import QgsProject, QgsPointXY
+
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -54,6 +58,7 @@ class pluginmDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pushButton_zliczobiek.clicked.connect(self.zlicz_obiekty)
         self.pushButton_pokazwsp.clicked.connect(self.podaj_dane_o_obiekcie)
         self.pushButton_dh.clicked.connect(self.calculate_dh)
+        self.pushButton_liczpole.clicked.connect(self.licz_pole)
 
     def zlicz_obiekty(self):
         wybrana_warstwa =  self.mMapLayerComboBox.currentLayer()
@@ -64,47 +69,95 @@ class pluginmDialog(QtWidgets.QDialog, FORM_CLASS):
         aktywna_warstwa = iface.activeLayer()
         selected_f = aktywna_warstwa.selectedFeatures()
         self.label_resultnazwa.setText(aktywna_warstwa.name())
+        self.listaWybranychOb_wsp.clear()  # Wyczyszczenie listy przed dodaniem nowych wartości
         for feature in selected_f:
             geom = feature.geometry()
             geomSingleType = QgsWkbTypes.isSingleType(geom.wkbType())
             if geom.type() == QgsWkbTypes.PointGeometry:
                 if geomSingleType:
-                    x = geom.asPoint()
-                    
-                    self.listaWybranychOb_wsp.append(f'Point: {x}, \r\n')
+                    point = geom.asPoint()
+                    x, y = round(point.x(), 3), round(point.y(), 3)
+                    self.listaWybranychOb_wsp.append(f'Point: ({x}, {y}) \r\n')
                 else:
-                    x = geom.asMultiPoint()
-                    
-                    self.listaWybranychOb_wsp.append(f'MultiPoint: {x}, \r\n')
+                    points = geom.asMultiPoint()
+                    points_str = ', '.join([f'({round(p.x(), 3)}, {round(p.y(), 3)})' for p in points])
+                    self.listaWybranychOb_wsp.append(f'MultiPoint: {points_str} \r\n')
             elif geom.type() == QgsWkbTypes.LineGeometry:
                 if geomSingleType:
-                    x =geom.asPolyline()
-                    self.listaWybranychOb_wsp.append(f'Line: {x}, \r\n')
+                    line = geom.asPolyline()
+                    line_str = ', '.join([f'({round(p.x(), 3)}, {round(p.y(), 3)})' for p in line])
+                    self.listaWybranychOb_wsp.append(f'Line: {line_str} \r\n')
                 else:
-                    x = geom.asMultiPolyline()
-                    self.listaWybranychOb_wsp.append(f'Multiline: {x}, \r\n')
+                    lines = geom.asMultiPolyline()
+                    lines_str = '; '.join([', '.join([f'({round(p.x(), 3)}, {round(p.y(), 3)})' for p in line]) for line in lines])
+                    self.listaWybranychOb_wsp.append(f'MultiLine: {lines_str} \r\n')
             elif geom.type() == QgsWkbTypes.PolygonGeometry:
                 if geomSingleType:
-                    x = geom.asPolygon()
-                    self.listaWybranychOb_wsp.append(f'Polygon: {x}, \r\n')
+                    polygon = geom.asPolygon()
+                    polygon_str = '; '.join([', '.join([f'({round(p.x(), 3)}, {round(p.y(), 3)})' for p in ring]) for ring in polygon])
+                    self.listaWybranychOb_wsp.append(f'Polygon: {polygon_str} \r\n')
                 else:
-                    x = geom.asMultiPolygon()
-                    self.listaWybranychOb_wsp.append(f'MultiPolygon: {x}, \r\n')
+                    polygons = geom.asMultiPolygon()
+                    polygons_str = ' | '.join(['; '.join([', '.join([f'({round(p.x(), 3)}, {round(p.y(), 3)})' for p in ring]) for ring in polygon]) for polygon in polygons])
+                    self.listaWybranychOb_wsp.append(f'MultiPolygon: {polygons_str} \r\n')
             else:
-                print('unknown or invalid geomety')
-                    
+                self.listaWybranychOb_wsp.append('Nieznana lub nieprawidłowa geometria\r\n')
                     
         
     def calculate_dh(self):
         current_layer = self.mMapLayerComboBox.currentLayer()
+        if current_layer is None:
+            iface.messageBar().pushMessage("Różnica wysokosci", 'Nie wybrano aktywnej warstwy', level = Qgis.Warning)
+            return
         selected_features = current_layer.selectedFeatures()
-        h_1 = float(selected_features[0]['wysokosc'])
-        h_2 = float(selected_features[1]['wysokosc'])
-        d_h = h_2 - h_1
-        self.label_dh_result.setText(f'{d_h} m')
+        if len(selected_features) != 2:
+            iface.messageBar().pushMessage("Różnica wysokosci", 'Aby policzyć dh wybierz DWA PUNKTY', level = Qgis.Warning)
+            return
+        if len(selected_features) == 2:
+            h_1 = float(selected_features[0]['wysokosc'])
+            h_2 = float(selected_features[1]['wysokosc'])
+            d_h = round(h_2 - h_1, 3)
+            self.label_dh_result.setText(f'{d_h} m')
+            
+        QgsMessageLog.logMessage('Różnica wysokości między wybranymi punktami wynosi:' +str(d_h) +'m', level = Qgis.Success)
+        
+        iface.messageBar().pushMessage("Różnica wysokosci", 'Różnica wysokości między wybranymi punktami została policzona', level = Qgis.Success)
         
     
+    def licz_pole(self):
+        current_layer = self.mMapLayerComboBox.currentLayer()
+        if current_layer is None:
+            iface.messageBar().pushMessage("Pole powierzchni", 'Nie wybrano aktywnej warstwy', level = Qgis.Warning)
+            return
+        selected_features = current_layer.selectedFeatures()
+        punkty = []
+        for feature in selected_features:
+            geom = feature.geometry()
+            if geom.type() == QgsWkbTypes.PointGeometry:
+                point = geom.asPoint()
+                x, y = round(point.x(), 3), round(point.y(), 3)
+                p = QgsPointXY(x, y)
+                punkty.append(p)
+
+        if len(punkty) < 3:
+            iface.messageBar().pushMessage("Pole powierzchni", 'Aby policzyć pole powierzchni wybierz co najmniej TRZY PUNKTY', level = Qgis.Warning)
+            return
+
+        pole = 0
+        dl = len(punkty)
+        for e in range(dl):
+            a = (e + 1) % dl
+            pole += (punkty[a].x() + punkty[e].x()) * (punkty[a].y() - punkty[e].y())
+
+        pole /= 2
+        pole = round(abs(pole / 10000), 3)
         
+        self.label_pole.setText(str(pole) + ' ha')
+
+        QgsMessageLog.logMessage('Pole powierzchni wielokąta wynosi: ' + str(pole) + ' ha', level = Qgis.Success)
+        
+        iface.messageBar().pushMessage("Pole powierzchni", 'Pole powierzchni wielokąta zostało policzone', level = Qgis.Success)
+       
         
     #def oblicz_powierzchnie(wspolrzedne):
    
