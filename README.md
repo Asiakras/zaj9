@@ -15,12 +15,16 @@
 ## Funkcje wtyczki:
 
   1. Liczenie ilości obiektów na wybranej warstiwe
+     
      Funkcja liczy obiekty na wybranej warstwie za pomocą komeny "featureCount" i pokazuje wynik.
-  2. Liczenie różnic wysokości pomiędzy dwoma wybranymi punktami
+  3. Liczenie różnic wysokości pomiędzy dwoma wybranymi punktami
+     
      Na pdostawie danych zczytanych z geometrii wybranych punktów a dokładniej własności "wysokosc" funkcja oblicza różnice przewyższeń pomiędzy punktami. Wynik może się pojawić dodatni lub ujemny w zależoności od wybranych puntów i jego jednostkami są metry. Wynik jest podawany z dokładnością 3 miejsc po przecinku.
-  3. Pokazanie współrzędnych wybranych punktów
+  5. Pokazanie współrzędnych wybranych punktów
+     
      Funkcja zczytuje współrzędne zaznaczonych punktów z pliku użytego w programie QGIS i pokazuje ich wartości XYZ w oknie wtyczki. 
-  4. Liczenie pola powierzchni pomiędzy zaznaczonymi punktami
+  7. Liczenie pola powierzchni pomiędzy zaznaczonymi punktami
+     
      Funkcja ściąga wartości X i Y zaznaczonych punktów. Następnie na podstawie tych współrzędych, program policzy pole powierzchni zawarte między nimi. Obliczneia są robione metodą Gaussa i jednostkami wyniku są metry kwadratowe. Wynik jest podawany z dokładnością 3 miejsc po przecinku.   
 
     
